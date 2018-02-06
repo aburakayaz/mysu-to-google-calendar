@@ -1,0 +1,622 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <!--<link rel="icon" href="../../../../favicon.ico">-->
+
+  <title>Add Your MySU Course Schedule to Google Calendar</title>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+  crossorigin="anonymous">
+</head>
+
+<body class="bg-light">
+
+  <div class="container">
+    <div class="py-5 text-center">
+      <img class="d-block mx-auto mb-4" src="./example.png" alt="" width="500" height="500">
+      <h2>Add Your MySU Course Schedule to Google Calendar</h2>
+      <strong>Disclaimer: This project is only suitable for
+        the schedule that Sabancı University students can
+        obtain from MySU.</strong>
+      <p class="lead">If you are a Sabancı University student
+      and you would like to add your classes to Google Calendar,
+      this page is created to make that process as easy as possible.
+      As shown in the image above, simply <strong>select your schedule
+      from MySU</strong> and copy it and paste it down below.</p>
+      <p class="lead">
+      Click the "Regenerate Your Schedule" button and check the
+      generated schedule at the bottom of the page. <strong>
+      Please make sure that the schedule is correct</strong>
+      and also the Sync section shows the right current term.
+      Otherwise, <strong>a wrong schedule might get insterted
+      </strong> to your Google Calendar. In that case, you can
+      use the "Remove" button.
+    </p>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 order-md-2">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+          <span class="text-muted">Authorization</span>
+          <!--<span class="badge badge-secondary badge-pill">3</span>-->
+          <h4 class="mb-3">Connect Using Your Google Account</h4>
+          <button class="btn btn-primary btn-lg btn-block" id="authorize-button" style="display: none;">Sign In</button>
+          <button class="btn btn-warning btn-lg btn-block" id="signout-button" style="display: none;">Sign Out</button>
+          <div id="authorized-actions" style="display:none;">
+            <hr class="mb-4">
+            <h4 class="mb-3">Sync With Your Google Calendar</h4>
+            <p>Current Term: 2017-2018 Spring</p>
+            <p>Please select the current week from below.</p>
+            <div class="col">
+              <div class="row">
+                <h5 class="col-md-4">Current Week:</h5>
+                <select class="form-control col-md-8" name="week" id="week">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-success btn-lg btn-block mt-3" id="add-button" style="display: none;">Synchronize</button>
+            <hr class="mb-4">
+            <h4 class="mb-3">Remove Classes From Your Calendar</h4>
+            <p><strong>Be Careful!</strong> this button will remove the
+            classes from your Google Calendar. There are some precautions
+            that are taken in order to make sure that only the generated
+            classes will be removed.</p>
+            <button class="btn btn-danger btn-lg btn-block" id="delete-button">Remove</button>
+          </div>
+        </h4>
+
+
+      </div>
+      <div class="col-md-6 order-md-1">
+        <h4 class="mb-3">Paste Your Schedule Here</h4>
+        <textarea class="form-control" id="paste" rows="5"></textarea>
+        <hr class="mb-4">
+        <button class="btn btn-primary btn-lg btn-block" type="submit" id="test-button">Regenerate Your Schedule</button>
+        <hr class="mb-4">
+        <h4 class="mb-3">Results Will Appear Here</h4>
+        <pre id="content" style="overflow-y: scroll; height:200px;">
+        </pre>
+      </div>
+    </div>
+
+    <div class="py-5 text-center">
+      <h2>Generated Calendar</h2>
+      <table class="table" id="schedule">
+        <thead>
+          <tr class="row">
+            <td class="col"></td>
+            <td class="col">MON</td>
+            <td class="col">TUES</td>
+            <td class="col">WED</td>
+            <td class="col">THURS</td>
+            <td class="col">FRI</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row">
+            <td class="col">08:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">09:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">10:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">11:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">12:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">13:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">14:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">15:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">16:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">17:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+          <tr class="row">
+            <td class="col">18:40</td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+            <td class="col"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+      <p class="mb-1">&copy; 2017-2018 Adnan Burak Ayaz</p>
+      <ul class="list-inline">
+        <li class="list-inline-item"><a href="https://aburakayaz.github.io">Blog</a></li>
+        <li class="list-inline-item"><a href="https://github.com/aburakayaz">GitHub</a></li>
+      </ul>
+    </footer>
+  </div>
+
+  <!-- Bootstrap core JavaScript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+  // Client ID and API key from the Developer Console
+  var CLIENT_ID = '197424454819-lbdl0oae7t19604mql2aibgdc01u46eb.apps.googleusercontent.com';
+  var API_KEY = 'AIzaSyBh2n_He6PjNUOuL10SGai90CF1pCMpSzA';
+
+  // Array of API discovery doc URLs for APIs used by the quickstart
+  var DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
+
+  // Authorization scopes required by the API; multiple scopes can be
+  // included, separated by spaces.
+  var SCOPES = 'https://www.googleapis.com/auth/calendar';
+
+  var authorizeButton = document.getElementById('authorize-button');
+  var signoutButton = document.getElementById('signout-button');
+  var authorizedActions = document.getElementById('authorized-actions');
+  var addButton = document.getElementById('add-button');
+
+  /**
+  *  On load, called to load the auth2 library and API client library.
+  */
+  function handleClientLoad() {
+    gapi.load('client:auth2', initClient);
+  }
+
+  /**
+  *  Initializes the API client library and sets up sign-in state
+  *  listeners.
+  */
+  function initClient() {
+    gapi.client.init({
+      apiKey: API_KEY,
+      clientId: CLIENT_ID,
+      discoveryDocs: DISCOVERY_DOCS,
+      scope: SCOPES
+    }).then(function () {
+      // Listen for sign-in state changes.
+      gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+      // Handle the initial sign-in state.
+      updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+      authorizeButton.onclick = handleAuthClick;
+      signoutButton.onclick = handleSignoutClick;
+      addButton.onclick = addClasses;
+    });
+  }
+
+  /**
+  *  Called when the signed in status changes, to update the UI
+  *  appropriately. After a sign-in, the API is called.
+  */
+  function updateSigninStatus(isSignedIn) {
+    if (isSignedIn) {
+      authorizeButton.style.display = 'none';
+      signoutButton.style.display = 'block';
+      authorizedActions.style.display = 'block';
+    } else {
+      authorizeButton.style.display = 'block';
+      signoutButton.style.display = 'none';
+      authorizedActions.style.display = 'none';
+    }
+  }
+
+  /**
+  *  Sign in the user upon button click.
+  */
+  function handleAuthClick(event) {
+    gapi.auth2.getAuthInstance().signIn();
+  }
+
+  /**
+  *  Sign out the user upon button click.
+  */
+  function handleSignoutClick(event) {
+    gapi.auth2.getAuthInstance().signOut();
+  }
+
+  /**
+  * Append a pre element to the body containing the given message
+  * as its text node. Used to display the results of the API call.
+  *
+  * @param {string} message Text to be placed in pre element.
+  */
+  function appendPre(message) {
+    var pre = document.getElementById('content');
+    var textContent = document.createTextNode(message + '\n');
+    pre.appendChild(textContent);
+  }
+
+  /**
+  * Prepend a pre element to the body containing the given message
+  * as its text node. Used to display the results of the API call.
+  *
+  * @param {string} message Text to be placed in pre element.
+  */
+  function prependPre(message) {
+    var pre = document.getElementById('content');
+    var textContent = document.createTextNode(message + '\n');
+    pre.insertBefore(textContent, pre.firstChild);
+  }
+
+  /**
+  * Print the summary and start datetime/date of the next ten events in
+  * the authorized user's calendar. If no events are found an
+  * appropriate message is printed.
+  */
+  function listUpcomingEvents() {
+    gapi.client.calendar.events.list({
+      'calendarId': 'primary',
+      'timeMin': (new Date()).toISOString(),
+      'showDeleted': false,
+      'singleEvents': true,
+      'maxResults': 10,
+      'orderBy': 'startTime'
+    }).then(function(response) {
+      var events = response.result.items;
+      prependPre('Upcoming events:');
+
+      if (events.length > 0) {
+        for (i = 0; i < events.length; i++) {
+          var event = events[i];
+          var when = event.start.dateTime;
+          if (!when) {
+            when = event.start.date;
+          }
+          prependPre(event.summary + ' (' + when + ')')
+        }
+      } else {
+        prependPre('No upcoming events found.');
+      }
+    });
+  }
+</script>
+
+<script>
+let tableMatrix;
+const today = new Date();
+let firstWeek;
+let recurrences = ['RRULE:FREQ=WEEKLY;COUNT=15'];
+
+function fillRecurrences() {
+  setFirstWeek();
+
+  if (recurrences.length > 1) {
+    return;
+  }
+
+  date = new Date(firstWeek.getTime());
+  date.setDate(date.getDate() + 56); // Add 8 weeks
+
+  let i, j;
+  for (i = 0; i < 5; i++) {
+    for (j = 8; j <= 18; j++) {
+      date.setHours(j + 3);
+      date.setMinutes(40);
+      recurrences.push('EXDATE;TZID=Europe/Istanbul:'
+      + date.toISOString().replace(/(-|:)/g, '').split('.')[0]);
+    }
+    date.setDate(date.getDate() + 1);
+  }
+}
+
+function processAnHour(hour) {
+  return hour.split(/(\t|\n)/) // Split the hour.
+  .filter(cell => { // Eliminate unnecessary elements.
+    return !/^(\t|\n)?$/.test(cell);
+  });
+}
+
+function getTableMatrix(text) {
+  return text.split(/\d\d:\d\d/g) // Split the table to hours.
+  .splice(1) // Take out the days row.
+  .map(hour => { // Process each hour.
+    return processAnHour(hour);
+  });
+}
+
+function fillSchedule() {
+  classesToAdd = -1;
+  let table = document.getElementById('schedule');
+  let hour;
+  for (let i = 1; i < 12; i++) {
+    hour = tableMatrix[i - 1];
+    let cell = 1;
+    for (let j = 0; j < hour.length; j++, cell++) {
+      if (hour[j] == ' ') {
+        continue;
+      }
+      table.rows[i]
+      .cells[cell]
+      .innerText = hour[j] + '\n' + hour[j + 1];
+      classesToAdd++;
+      j++;
+    }
+  }
+  tableMatrix.map(hour => {
+    table.rows
+  });
+}
+
+function printClasses() {
+  let text = document.getElementById('paste').value;
+  tableMatrix = getTableMatrix(text);
+  fillSchedule();
+}
+
+let eventsToDelete = -1;
+
+function decreaseEventsToDelete() {
+  if (eventsToDelete == 0) {
+    prependPre('SUCCESSFULLY DELETED');
+  }
+
+  eventsToDelete--;
+}
+
+let classesToAdd = -1;
+
+function decreaseClassesToAdd() {
+  if (classesToAdd == 0) {
+    prependPre('SUCCESSFULLY SYNCED!');
+  }
+
+  classesToAdd--;
+}
+
+function deleteEvent(eventId) {
+  var request = gapi.client.calendar.events.delete({
+    'calendarId': 'primary',
+    'eventId': eventId
+  });
+
+  request.execute(function(event) {
+    prependPre('Event deleted');
+    decreaseEventsToDelete();
+  });
+}
+
+function deleteEvents(events) {
+  let delay = 0;
+  eventsToDelete += events.length;
+  events.forEach(event => {
+    if (event.recurrence.indexOf('RRULE:FREQ=WEEKLY;COUNT=15') == -1) {
+      return;
+    }
+    if (event.summary.search(/[A-Z]+ \d+/) == -1) {
+      return;
+    }
+    setTimeout(deleteEvent, delay, event.id);
+    delay += 200;
+  });
+}
+
+function deleteBetweenDates(beginDate, endDate) {
+  var request = gapi.client.calendar.events.list({
+    'calendarId': 'primary',
+    'timeMin': beginDate.toISOString(),
+    'timeMax': endDate.toISOString()
+  });
+
+  request.execute(function(events) {
+    console.log(events);
+    deleteEvents(events.items);
+  });
+}
+
+function deleteClasses() {
+  setFirstWeek();
+
+  let date = new Date(firstWeek.getTime());
+  date.setHours(0);
+  date.setDate(date.getDate() + 7);
+  let endDate = new Date(date.getTime());
+
+  endDate.setDate(endDate.getDate() + 2);
+
+  deleteBetweenDates(date, endDate);
+
+  date.setDate(date.getDate() + 2);
+  endDate.setDate(endDate.getDate() + 2);
+
+  deleteBetweenDates(date, endDate);
+
+  date.setDate(date.getDate() + 1);
+  endDate.setDate(endDate.getDate() + 1);
+
+  deleteBetweenDates(date, endDate);
+}
+
+function getStartTime(day, hour) {
+  let date = new Date(firstWeek.getTime());
+  date.setDate(date.getDate() + day);
+  date.setHours(hour + 8);
+  date.setMinutes(40);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+  return date.toISOString();
+}
+
+function getEndTime(startTime) {
+  let hour = startTime.substr(11, 2);
+  let nextHour = (+hour + +1).toString();
+  if (nextHour.length < 2) {
+    nextHour = '0' + nextHour;
+  }
+  startTime = startTime.replace(hour + ':', nextHour + ':');
+  return startTime.replace(':40', ':30')
+}
+
+function addClass(_class, place, day, hour) {
+  //console.log(_class, place, day, hour);
+
+  place = place.split('-').join(' ');
+  _class = _class.split('-').join(' ');
+
+  let startTime = getStartTime(day, hour);
+  let endTime = getEndTime(startTime);
+
+  fillRecurrences()
+
+  var event = {
+    'start': {
+      'dateTime': startTime,
+      'timeZone': 'Europe/Istanbul'
+    },
+    'end': {
+      'dateTime': endTime,
+      'timeZone': 'Europe/Istanbul'
+    },
+    'location': place + ' Sabancı Üniversitesi',
+    'reminders': {
+      'useDefault': false
+    },
+    'summary': _class,
+    'recurrence': recurrences
+  };
+
+  console.log(event);
+
+  var request = gapi.client.calendar.events.insert({
+    'calendarId': 'primary',
+    'resource': event
+  });
+
+  request.execute(function(event) {
+    prependPre('Event created: ' + event.htmlLink);
+    decreaseClassesToAdd();
+  });
+}
+
+function setFirstWeek() {
+  if (firstWeek) {
+    return;
+  }
+  firstWeek = new Date();
+  weekDifference = document.getElementById('week').value;
+  firstWeek.setDate(firstWeek.getDate() - 7 * (weekDifference - 1));
+  while(firstWeek.getDay() != 1) {
+    firstWeek.setDate(firstWeek.getDate() - 1);
+  }
+  firstWeek.setHours(0);
+  firstWeek.setMinutes(0);
+  firstWeek.setSeconds(0);
+}
+
+function addClasses() {
+  setFirstWeek();
+
+  let delay = 0;
+
+  tableMatrix.forEach((row, hour) => {
+    let day = 0;
+    for (let i = 0; i < row.length; i++, day++) {
+      if (row[i] == ' ') {
+        continue;
+      }
+      setTimeout(addClass, delay, row[i],
+        row[i + 1], day, hour);
+        delay += 500;
+        i++;
+      }
+    });
+
+  }
+
+  var testButton = document.getElementById('test-button');
+  var deleteButton = document.getElementById('delete-button');
+  testButton.onclick = printClasses;
+  deleteButton.onclick = deleteClasses;
+  </script>
+
+  <script async defer src="https://apis.google.com/js/api.js"
+  onload="this.onload=function(){};handleClientLoad()"
+  onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script>
+</body>
+</html>
