@@ -70,14 +70,14 @@ function updateSigninStatus(isSignedIn) {
 /**
  *  Sign in the user upon button click.
  */
-function handleAuthClick(event) {
+function handleAuthClick() {
     gapi.auth2.getAuthInstance().signIn();
 }
 
 /**
  *  Sign out the user upon button click.
  */
-function handleSignoutClick(event) {
+function handleSignoutClick() {
     gapi.auth2.getAuthInstance().signOut();
 }
 
@@ -96,6 +96,16 @@ function prependPre(message) {
 let tableMatrix;
 let firstWeek;
 let recurrences = ['RRULE:FREQ=WEEKLY;COUNT=15'];
+
+/**
+ * Go to an anchor in a page.
+ *
+ * @param id
+ */
+function jump(id) {
+    window.location = window.location.origin
+        + window.location.pathname + '#' + id;
+}
 
 function fillRecurrences() {
     setFirstWeek();
@@ -161,18 +171,20 @@ function fillSchedule() {
             classesToAdd++;
         }
     }
+
 }
 
 function printClasses() {
     let text = document.getElementById('paste').value;
     tableMatrix = getTableMatrix(text);
     fillSchedule();
+    jump('schedule');
 }
 
 let eventsToDelete = -1;
 
 function decreaseEventsToDelete() {
-    if (eventsToDelete == 0) {
+    if (eventsToDelete === 0) {
         prependPre('SUCCESSFULLY DELETED');
     }
 
@@ -182,7 +194,7 @@ function decreaseEventsToDelete() {
 let classesToAdd = -1;
 
 function decreaseClassesToAdd() {
-    if (classesToAdd == 0) {
+    if (classesToAdd === 0) {
         prependPre('SUCCESSFULLY SYNCED!');
     }
 
@@ -190,12 +202,12 @@ function decreaseClassesToAdd() {
 }
 
 function deleteEvent(eventId) {
-    var request = gapi.client.calendar.events.delete({
+    let request = gapi.client.calendar.events.delete({
         'calendarId': 'primary',
         'eventId': eventId
     });
 
-    request.execute(function (event) {
+    request.execute(() => {
         prependPre('Event deleted');
         decreaseEventsToDelete();
     });
@@ -205,10 +217,10 @@ function deleteEvents(events) {
     let delay = 0;
     eventsToDelete += events.length;
     events.forEach(event => {
-        if (event.recurrence.indexOf('RRULE:FREQ=WEEKLY;COUNT=15') == -1) {
+        if (event.recurrence.indexOf('RRULE:FREQ=WEEKLY;COUNT=15') === -1) {
             return;
         }
-        if (event.summary.search(/[A-Z]+ \d+/) == -1) {
+        if (event.summary.search(/[A-Z]+ \d+/) === -1) {
             return;
         }
         setTimeout(deleteEvent, delay, event.id);
@@ -269,7 +281,7 @@ function addClass(_class, place, day, hour) {
     let startTime = getStartTime(day, hour);
     let endTime = getEndTime(startTime);
 
-    fillRecurrences()
+    fillRecurrences();
 
     let event = {
         'start': {
@@ -306,9 +318,9 @@ function setFirstWeek() {
         return;
     }
     firstWeek = new Date();
-    weekDifference = document.getElementById('week').value;
+    let weekDifference = document.getElementById('week').value;
     firstWeek.setDate(firstWeek.getDate() - 7 * (weekDifference - 1));
-    while (firstWeek.getDay() != 1) {
+    while (firstWeek.getDay() !== 1) {
         firstWeek.setDate(firstWeek.getDate() - 1);
     }
     firstWeek.setHours(0);
