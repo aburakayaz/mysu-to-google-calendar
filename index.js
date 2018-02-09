@@ -57,11 +57,14 @@ function updateSigninStatus(isSignedIn) {
         authorizeButton.style.display = 'none';
         signoutButton.style.display = 'block';
         authorizedActions.style.display = 'block';
-    } else {
-        authorizeButton.style.display = 'block';
-        signoutButton.style.display = 'none';
-        authorizedActions.style.display = 'none';
+        addButton.style.display = 'block';
+        return;
     }
+
+    authorizeButton.style.display = 'block';
+    signoutButton.style.display = 'none';
+    authorizedActions.style.display = 'none';
+    addButton.style.display = 'none';
 }
 
 /**
@@ -85,8 +88,8 @@ function handleSignoutClick(event) {
  * @param {string} message Text to be placed in pre element.
  */
 function prependPre(message) {
-    var pre = document.getElementById('content');
-    var textContent = document.createTextNode(message + '\n');
+    let pre = document.getElementById('content');
+    let textContent = document.createTextNode(message + '\n');
     pre.insertBefore(textContent, pre.firstChild);
 }
 
