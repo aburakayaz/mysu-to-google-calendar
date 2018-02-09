@@ -322,17 +322,14 @@ function addClasses() {
     let delay = 0;
 
     tableMatrix.forEach((row, hour) => {
-        let day = 0;
-        for (let i = 0; i < row.length; i++, day++) {
+        for (let i = 0; i < row.length; i++) {
             if (row[i] === ' ') {
                 continue;
             }
-            setTimeout(addClass, delay, row[i],
-                row[i + 1], day, hour);
+            setTimeout(addClass, delay, row[i].name,
+                row[i].place, i, hour);
             delay += 500;
-            i++;
         }
     });
-
 }
 
