@@ -2,26 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!--<link rel="icon" href="../../../../favicon.ico">-->
 
     <title>Add Your MySU Course Schedule to Google Calendar</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
           crossorigin="anonymous">
-    
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113204083-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
-      gtag('config', 'UA-113204083-1');
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async
+            src="https://www.googletagmanager.com/gtag/js?id=UA-113204083-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-113204083-1');
     </script>
 </head>
 
@@ -36,7 +42,7 @@
             obtain from MySU.</strong>
         <p class="py-3 text-danger">
             Please copy your schedule from
-            <a target="_blank" href="https://mysu.sabanciuniv.edu/en/ajax/getCourseSchedule?termcode=201702">
+            <a id="term_schedule_link" target="_blank" href="#">
                 here
             </a>
             otherwise it might not work.
@@ -44,15 +50,17 @@
         <p class="lead">If you are a Sabancı University student
             and you would like to add your classes to Google Calendar,
             this page is created to make that process as easy as possible.
-            As shown in the image above, simply <strong>select your schedule
-                from the given link </strong> and copy it and paste it down below.</p>
+            As shown in the image above, simply
+            <b>select your schedule from the given link</b>
+            and copy it and paste it down below.
+        </p>
         <p class="lead">
             Click the "Regenerate Your Schedule" button and check the
-            generated schedule at the bottom of the page. <strong>
-            Please make sure that the schedule is correct</strong>
+            generated schedule at the bottom of the page.
+            <b>Please make sure that the schedule is correct</b>
             and also the Sync section shows the right current term.
-            Otherwise, <strong>a wrong schedule might get insterted
-        </strong> to your Google Calendar. In that case, you can
+            Otherwise, <b>a wrong schedule might get insterted</b>
+            to your Google Calendar. In that case, you can
             use the "Remove" button.
         </p>
     </div>
@@ -62,21 +70,27 @@
             <div class="mb-3">
                 <h4 class="text-muted">Authorization</h4>
                 <h4 class="mb-3">Connect Using Your Google Account</h4>
-                <button class="btn btn-primary btn-lg btn-block" id="authorize-button">
+                <button class="btn btn-primary btn-lg btn-block"
+                        id="authorize-button">
                     Sign In
                 </button>
-                <button class="btn btn-warning btn-lg btn-block" id="signout-button" style="display: none;">
+                <button class="btn btn-warning btn-lg btn-block"
+                        id="signout-button" style="display: none;">
                     Sign Out
                 </button>
                 <div id="authorized-actions" style="display:none;">
                     <hr class="mb-4">
-                    <h4 class="mb-3">Sync With Your Google Calendar</h4>
-                    <p>Current Term: 2017-2018 Spring</p>
+                    <h4 class="mb-3">
+                        Add
+                        <i class="calendar_summary"></i>
+                        To Your Calendar
+                    </h4>
                     <p>Please select the current week from below.</p>
                     <div class="col">
                         <div class="row">
                             <h5 class="col-md-4">Current Week:</h5>
-                            <select class="form-control col-md-8" name="week" id="week">
+                            <select class="form-control col-md-8" name="week"
+                                    id="week">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -94,31 +108,42 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-success btn-lg btn-block mt-3" id="add-button" style="display: none;">
-                        Synchronize
+                    <button class="btn btn-success btn-lg btn-block mt-3"
+                            id="add-button" style="display: none;">
+                        Add
                     </button>
                     <hr class="mb-4">
-                    <h4 class="mb-3">Remove Classes From Your Calendar</h4>
-                    <p><strong>Be Careful!</strong> this button will remove the
-                        classes from your Google Calendar. There are some precautions
-                        that are taken in order to make sure that only the generated
-                        classes will be removed.</p>
-                    <button class="btn btn-danger btn-lg btn-block" id="delete-button">Remove</button>
+                    <h4 class="mb-3">
+                        Delete
+                        <i class="calendar_summary"></i>
+                        From Your Calendar
+                    </h4>
+                    <p>
+                        <b>Be Careful!</b>
+                        This button will remove the
+                        <i class="calendar_summary"></i>
+                        from your Google Calendar.
+                    </p>
+                    <button class="btn btn-danger btn-lg btn-block"
+                            id="delete-button">
+                        Delete
+                    </button>
                 </div>
             </div>
-
-
         </div>
         <div class="col-md-6 order-md-1">
             <h4 class="mb-3">Paste Your Schedule Here</h4>
             <textarea class="form-control" id="paste" rows="5"></textarea>
-            <hr class="mb-4">
-            <button class="btn btn-primary btn-lg btn-block" id="test-button">Regenerate Your Schedule
+            <button class="btn btn-primary btn-lg btn-block" id="test-button"
+                    style="margin-top: 1rem;">
+                Parse Your Schedule
             </button>
             <hr class="mb-4">
-            <h4 class="mb-3">Results Will Appear Here</h4>
-            <pre id="content" style="overflow-y: scroll; height:200px;">
-        </pre>
+            <h4 class="mb-3">Notification Area</h4>
+            <div id="notificationArea"
+                 style="overflow-y: scroll; height:260px; background: white;
+                        padding: 0.6rem;">
+            </div>
         </div>
     </div>
 
@@ -231,8 +256,10 @@
     <footer class="my-5 pt-5 text-muted text-center text-small">
         <p class="mb-1">&copy; 2017-2018 Adnan Burak Ayaz</p>
         <ul class="list-inline">
-            <li class="list-inline-item"><a href="https://aburakayaz.github.io">Blog</a></li>
-            <li class="list-inline-item"><a href="https://github.com/aburakayaz">GitHub</a></li>
+            <li class="list-inline-item"><a href="https://aburakayaz.github.io">Blog</a>
+            </li>
+            <li class="list-inline-item"><a
+                    href="https://github.com/aburakayaz">GitHub</a></li>
         </ul>
     </footer>
 </div>
