@@ -1,20 +1,33 @@
 // Client ID and API key from the Developer Console
-let CLIENT_ID = '197424454819-lbdl0oae7t19604mql2aibgdc01u46eb.apps.googleusercontent.com';
-let API_KEY = 'AIzaSyBh2n_He6PjNUOuL10SGai90CF1pCMpSzA';
+const CLIENT_ID = '197424454819-lbdl0oae7t19604mql2aibgdc01u46eb.apps.googleusercontent.com';
+const API_KEY = 'AIzaSyBh2n_He6PjNUOuL10SGai90CF1pCMpSzA';
 
 // Array of API discovery doc URLs for APIs used by the quickstart
-let DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
+const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
 
 // Authorization scopes required by the API; multiple scopes can be
 // included, separated by spaces.
-let SCOPES = 'https://www.googleapis.com/auth/calendar';
+const SCOPES = 'https://www.googleapis.com/auth/calendar';
 
-let authorizeButton = document.getElementById('authorize-button');
-let signoutButton = document.getElementById('signout-button');
-let authorizedActions = document.getElementById('authorized-actions');
-let addButton = document.getElementById('add-button');
-let testButton = document.getElementById('test-button');
-let deleteButton = document.getElementById('delete-button');
+//  Current Term
+const CURRENT_TERM = '201801';
+
+const CALENDAR_SUMMARY = `Courses | Term ${CURRENT_TERM}`;
+for (const element of document.getElementsByClassName("calendar_summary")) {
+    element.textContent = CALENDAR_SUMMARY;
+}
+
+let CALENDAR = null;
+document.getElementById('term_schedule_link').href = `https://mysu.sabanciuniv.edu/en/ajax/getCourseSchedule?termcode=${CURRENT_TERM}`;
+
+//  DOM References
+const authorizeButton = document.getElementById('authorize-button');
+const signoutButton = document.getElementById('signout-button');
+const authorizedActions = document.getElementById('authorized-actions');
+const addButton = document.getElementById('add-button');
+const deleteButton = document.getElementById('delete-button');
+const notificationArea = document.getElementById('notificationArea');
+const testButton = document.getElementById('test-button');
 testButton.onclick = printClasses;
 
 
@@ -43,8 +56,8 @@ function initClient() {
         updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
         authorizeButton.onclick = handleAuthClick;
         signoutButton.onclick = handleSignoutClick;
-        addButton.onclick = addClasses;
-        deleteButton.onclick = deleteClasses;
+        addButton.onclick = addCalendar;
+        deleteButton.onclick = deleteCalendar;
     });
 }
 
@@ -52,12 +65,14 @@ function initClient() {
  *  Called when the signed in status changes, to update the UI
  *  appropriately. After a sign-in, the API is called.
  */
-function updateSigninStatus(isSignedIn) {
+async function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
         authorizeButton.style.display = 'none';
         signoutButton.style.display = 'block';
         authorizedActions.style.display = 'block';
         addButton.style.display = 'block';
+
+        await checkIfUserHasACalendarAlready();
         return;
     }
 
@@ -87,15 +102,15 @@ function handleSignoutClick() {
  *
  * @param {string} message Text to be placed in pre element.
  */
-function prependPre(message) {
-    let pre = document.getElementById('content');
-    let textContent = document.createTextNode(message + '\n');
-    pre.insertBefore(textContent, pre.firstChild);
+function addNotification(message) {
+    const notification = document.createElement("p");
+    notification.innerHTML = message;
+    notificationArea.appendChild(notification);
 }
 
 let tableMatrix;
 let firstWeek;
-let recurrences = ['RRULE:FREQ=WEEKLY;COUNT=15'];
+const recurrences = ['RRULE:FREQ=WEEKLY;COUNT=15'];
 
 /**
  * Go to an anchor in a page.
@@ -114,7 +129,7 @@ function fillRecurrences() {
         return;
     }
 
-    date = new Date(firstWeek.getTime());
+    const date = new Date(firstWeek.getTime());
     date.setDate(date.getDate() + 56); // Add 8 weeks
 
     let i, j;
@@ -132,13 +147,15 @@ function fillRecurrences() {
 function processAnHour(hour) {
     const regex = /(.*)((?:FASS|FMAN|FENS|SL)-[GL12]\d{3})/;
     let match;
-    return hour.replace('\n', '').split('\t')
+    return hour.replace('\n', '')
+        .split('\t')
         .filter(cell => {
             return cell !== '';
-        }).map(cell => {
+        })
+        .map(cell => {
             if (match = regex.exec(cell)) {
                 return {
-                    'name': match[1],
+                    'className': match[1],
                     'place': match[2]
                 }
             }
@@ -155,23 +172,19 @@ function getTableMatrix(text) {
 }
 
 function fillSchedule() {
-    classesToAdd = -1;
-    let table = document.getElementById('schedule');
+    const table = document.getElementById('schedule');
     let hour;
     for (let i = 1; i < 12; i++) {
         hour = tableMatrix[i - 1];
         for (let j = 0; j < hour.length; j++) {
-            console.log(i, j, hour);
             if (hour[j] === ' ') {
                 continue;
             }
             table.rows[i]
                 .cells[j + 1]
-                .innerText = hour[j].name + '\n' + hour[j].place;
-            classesToAdd++;
+                .innerText = hour[j].className + '\n' + hour[j].place;
         }
     }
-
 }
 
 function printClasses() {
@@ -179,79 +192,7 @@ function printClasses() {
     tableMatrix = getTableMatrix(text);
     fillSchedule();
     jump('schedule');
-}
-
-let eventsToDelete = -1;
-
-function decreaseEventsToDelete() {
-    if (eventsToDelete === 0) {
-        prependPre('SUCCESSFULLY DELETED');
-    }
-
-    eventsToDelete--;
-}
-
-let classesToAdd = -1;
-
-function decreaseClassesToAdd() {
-    if (classesToAdd === 0) {
-        prependPre('SUCCESSFULLY SYNCED!');
-    }
-
-    classesToAdd--;
-}
-
-function deleteEvent(eventId) {
-    let request = gapi.client.calendar.events.delete({
-        'calendarId': 'primary',
-        'eventId': eventId
-    });
-
-    request.execute(() => {
-        prependPre('Event deleted');
-        decreaseEventsToDelete();
-    });
-}
-
-function deleteEvents(events) {
-    let delay = 0;
-    eventsToDelete += events.length;
-    events.forEach(event => {
-        if (event.recurrence.indexOf('RRULE:FREQ=WEEKLY;COUNT=15') === -1) {
-            return;
-        }
-        if (event.summary.search(/[A-Z]+ \d+/) === -1) {
-            return;
-        }
-        setTimeout(deleteEvent, delay, event.id);
-        delay += 200;
-    });
-}
-
-function deleteBetweenDates(beginDate, endDate) {
-    let request = gapi.client.calendar.events.list({
-        'calendarId': 'primary',
-        'maxResults': 2500,
-        'timeMin': beginDate.toISOString(),
-        'timeMax': endDate.toISOString()
-    });
-
-    request.execute(function (events) {
-        console.log(events);
-        deleteEvents(events.items);
-    });
-}
-
-function deleteClasses() {
-    setFirstWeek();
-
-    let date = new Date(firstWeek.getTime());
-    date.setHours(0);
-    date.setDate(date.getDate() + 7);
-    let endDate = new Date(date.getTime());
-    endDate.setDate(endDate.getDate() + 7);
-
-    deleteBetweenDates(date, endDate);
+    addNotification('Generated your schedule.')
 }
 
 function getStartTime(day, hour) {
@@ -274,9 +215,9 @@ function getEndTime(startTime) {
     return startTime.replace(':40', ':30')
 }
 
-function addClass(_class, place, day, hour) {
+function getCourseRequest(calendarId, className, place, day, hour) {
     place = place.split('-').join(' ');
-    _class = _class.split('-').join(' ');
+    className = className.split('-').join(' ');
 
     let startTime = getStartTime(day, hour);
     let endTime = getEndTime(startTime);
@@ -292,24 +233,19 @@ function addClass(_class, place, day, hour) {
             'dateTime': endTime,
             'timeZone': 'Europe/Istanbul'
         },
-        'location': place + ' Sabancı Üniversitesi',
+        'location': place + ' Sabancı University',
         'reminders': {
             'useDefault': false
         },
-        'summary': _class,
+        'summary': className,
         'recurrence': recurrences
     };
 
     console.log(event);
 
-    let request = gapi.client.calendar.events.insert({
-        'calendarId': 'primary',
+    return gapi.client.calendar.events.insert({
+        'calendarId': calendarId,
         'resource': event
-    });
-
-    request.execute(function (event) {
-        prependPre('Event created: ' + event.htmlLink);
-        decreaseClassesToAdd();
     });
 }
 
@@ -328,20 +264,155 @@ function setFirstWeek() {
     firstWeek.setSeconds(0);
 }
 
-function addClasses() {
-    setFirstWeek();
+async function getUsersCalendars() {
+    return new Promise(function (resolve, reject) {
+        const request = gapi.client.calendar.calendarList.list();
 
-    let delay = 0;
-
-    tableMatrix.forEach((row, hour) => {
-        for (let i = 0; i < row.length; i++) {
-            if (row[i] === ' ') {
-                continue;
+        request.execute(function (response) {
+            if (response.hasOwnProperty("items")) {
+                resolve(response.items);
             }
-            setTimeout(addClass, delay, row[i].name,
-                row[i].place, i, hour);
-            delay += 500;
-        }
+            else {
+                reject(response);
+            }
+        });
+    })
+}
+
+async function checkIfUserHasACalendarAlready() {
+    const calendars = await getUsersCalendars();
+
+    const generatedCalendars = calendars.filter(
+        calendar => calendar.summary === CALENDAR_SUMMARY
+    );
+
+    console.log("Already existing calendars:", generatedCalendars);
+
+    if (generatedCalendars.length >= 1) {
+        addNotification(`You already have a calendar for <i>${CALENDAR_SUMMARY}</i>.`);
+        setCalendar(generatedCalendars[0]);
+    }
+    else {
+        setCalendar(null);
+    }
+}
+
+/**
+ *  Precondition: CALENDAR is null
+ */
+async function addCalendar() {
+    if (!tableMatrix) {
+        addNotification("Please paste your schedule to the above.");
+        return;
+    }
+
+    addButton.setAttribute('disabled', null);
+
+    try {
+        const newCalendar = await createCalendar();
+        await addCourses(newCalendar.id);
+        setCalendar(newCalendar);
+    }
+    catch (e) {
+        addNotification(e);
+        setCalendar(null);
+    }
+}
+
+function createCalendar() {
+    return new Promise(function (resolve, reject) {
+        const request = gapi.client.calendar.calendars.insert({
+            'summary': CALENDAR_SUMMARY,
+            //  https://eduardopereira.pt/2012/06/google-calendar-api-v3-set-color-color-chart/
+            'colorId': 8,
+        });
+
+        addNotification('Creating calendar...');
+
+        request.execute(function (response) {
+            console.log(response);
+
+            if (response.hasOwnProperty('error')) {
+                reject('Failed to create the calendar. Here is why:' + response.error.message);
+                return;
+            }
+
+            addNotification('Calendar created.');
+            resolve(response);
+        });
     });
 }
 
+async function addCourses(calendarId) {
+    return new Promise(function (resolve, reject) {
+        addNotification("Adding courses...");
+
+        setFirstWeek();
+
+        const batch = gapi.client.newBatch();
+
+        tableMatrix.forEach((row, hour) =>
+            row.forEach((course, i) => {
+                if (course === ' ') {
+                    return;
+                }
+                batch.add(
+                    getCourseRequest(calendarId, course.className, course.place, i, hour)
+                );
+            })
+        );
+
+        batch.execute(function (response) {
+            console.log(response);
+
+            if (response.hasOwnProperty('error')) {
+                reject('Failed to add courses. Here is why:' + response.error.message);
+                return;
+            }
+
+            addNotification('Courses added.');
+            resolve();
+        });
+    });
+}
+
+/**
+ *  Precondition: CALENDAR is not null
+ */
+function deleteCalendar() {
+    deleteButton.setAttribute('disabled', null);
+
+    const request = gapi.client.calendar.calendars.delete({
+        'calendarId': CALENDAR.id,
+    });
+
+    request.execute(function (response) {
+        console.log(response);
+
+        if (response.hasOwnProperty('error')) {
+            setCalendar(CALENDAR);
+            addNotification(`Failed to delete <i>${CALENDAR.summary}</i>. Here is why:`);
+            addNotification(response.error.message);
+            return;
+        }
+
+        addNotification(`<i>${CALENDAR.summary}</i> is deleted.`);
+        setCalendar(null);
+    });
+}
+
+/**
+ *  Sets the CALENDAR and changes other related states
+ */
+function setCalendar(calendar) {
+    CALENDAR = calendar;
+
+    if (calendar === null) {
+        addButton.removeAttribute('disabled');
+        deleteButton.setAttribute('disabled', null);
+    }
+    else {
+        addButton.setAttribute('disabled', null);
+        deleteButton.removeAttribute('disabled');
+    }
+}
