@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -29,49 +28,206 @@
 
         gtag('config', 'UA-113204083-1');
     </script>
+
+    <style>
+        .calendar-summary {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
 
 <div class="container">
-    <div class="py-5 text-center">
-        <img class="d-block mx-auto mb-4" src="./example.png" alt="">
+    <div class="my-5 text-center">
         <h2>Add Your MySU Course Schedule to Google Calendar</h2>
-        <strong>Disclaimer: This project is only suitable for
-            the schedule that Sabancı University students can
-            obtain from MySU.</strong>
-        <p class="py-3 text-danger">
-            Please copy your schedule from
-            <a id="term_schedule_link" target="_blank" href="#">
-                here
-            </a>
-            otherwise it might not work.
-        </p>
         <p class="lead">If you are a Sabancı University student
             and you would like to add your classes to Google Calendar,
             this page is created to make that process as easy as possible.
-            As shown in the image above, simply
-            <b>select your schedule from the given link</b>
-            and copy it and paste it down below.
-        </p>
-        <p class="lead">
-            Click the "Regenerate Your Schedule" button and check the
-            generated schedule at the bottom of the page.
-            <b>Please make sure that the schedule is correct</b>
-            and also the Sync section shows the right current term.
-            Otherwise, <b>a wrong schedule might get insterted</b>
-            to your Google Calendar. In that case, you can
-            use the "Remove" button.
         </p>
     </div>
 
+    <hr class="my-4"/>
+
+    <h4 class="mb-3 text-center">Set the Current Term</h4>
+    <form id="term-submit-form" class="row justify-content-center">
+        <div class="form-inline col-6 col-md-auto">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <label for="current-term-year">Year</label>
+                    </div>
+                </div>
+                <input type="number" class="form-control" id="current-term-year" min="0" max="9999">
+            </div>
+        </div>
+
+        <div class="form-inline col-6 col-md-auto">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <label for="current-term-type">Type</label>
+                    </div>
+                </div>
+                <select id="current-term-type" class="form-control">
+                    <option value="Fall">Fall</option>
+                    <option value="Spring">Spring</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <hr class="my-4"/>
+
+    <h4 class="mb-3 text-center">Get Your Schedule from MySU</h4>
     <div class="row">
+        <div class="col">
+            <p class="lead">
+                <a id="term-schedule-link" target="_blank" href="#">
+                    Link to Your <span class="current-term-verbal"></span> Schedule
+                </a>
+            </p>
+            <p class="lead">
+                As shown in the image,
+                simply select all the text content (Control+A or ⌘+A) in your schedule page
+                and copy it.
+            </p>
+
+            <textarea class="form-control" id="paste" rows="5"
+                      placeholder="Then Paste Your Schedule Here"></textarea>
+        </div>
+
+        <div class="col-auto">
+            <img class="img-fluid img-thumbnail"
+                 src="./example.png" alt="Figure 1: Example">
+        </div>
+    </div>
+
+    <div class="row mt-4 d-none" id="generated-schedule-row">
+        <div class="col text-center">
+            <p class="text-danger">
+                Please make sure your schedule matches with the below.
+            </p>
+            <h4>Generated Calendar</h4>
+            <table class="table" id="schedule">
+                <thead>
+                <tr class="row">
+                    <td class="col"></td>
+                    <td class="col">MON</td>
+                    <td class="col">TUES</td>
+                    <td class="col">WED</td>
+                    <td class="col">THURS</td>
+                    <td class="col">FRI</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="row">
+                    <td class="col">08:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">09:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">10:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">11:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">12:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">13:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">14:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">15:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">16:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">17:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                <tr class="row">
+                    <td class="col">18:40</td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                    <td class="col"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr class="my-4"/>
+
+    <div class="row">
+        <div class="col-md-6 order-md-1">
+            <h4 class="mb-3">Notification Area</h4>
+            <div id="notificationArea"
+                 style="overflow-y: scroll; height:260px; background: white; padding: 0.6rem;">
+            </div>
+        </div>
         <div class="col-md-6 order-md-2">
             <div class="mb-3">
                 <h4 class="text-muted">Authorization</h4>
                 <h4 class="mb-3">Connect Using Your Google Account</h4>
-                <button class="btn btn-primary btn-lg btn-block"
-                        id="authorize-button">
+                <button class="btn btn-primary btn-lg btn-block" id="authorize-button">
                     Sign In
                 </button>
                 <button class="btn btn-warning btn-lg btn-block"
@@ -82,15 +238,14 @@
                     <hr class="mb-4">
                     <h4 class="mb-3">
                         Add
-                        <i class="calendar_summary"></i>
+                        <span class="calendar-summary"></span>
                         To Your Calendar
                     </h4>
                     <p>Please select the current week from below.</p>
                     <div class="col">
                         <div class="row">
                             <h5 class="col-md-4">Current Week:</h5>
-                            <select class="form-control col-md-8" name="week"
-                                    id="week">
+                            <select class="form-control col-md-8" name="week" id="week">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -108,161 +263,43 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-success btn-lg btn-block mt-3"
-                            id="add-button" style="display: none;">
+                    <button class="btn btn-success btn-lg btn-block mt-3" id="add-button"
+                            style="display: none;">
                         Add
                     </button>
                     <hr class="mb-4">
                     <h4 class="mb-3">
                         Delete
-                        <i class="calendar_summary"></i>
+                        <span class="calendar-summary"></span>
                         From Your Calendar
                     </h4>
                     <p>
                         <b>Be Careful!</b>
                         This button will remove the
-                        <i class="calendar_summary"></i>
+                        <span class="calendar-summary"></span>
                         from your Google Calendar.
                     </p>
-                    <button class="btn btn-danger btn-lg btn-block"
-                            id="delete-button">
+                    <button class="btn btn-danger btn-lg btn-block" id="delete-button">
                         Delete
                     </button>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 order-md-1">
-            <h4 class="mb-3">Paste Your Schedule Here</h4>
-            <textarea class="form-control" id="paste" rows="5"></textarea>
-            <button class="btn btn-primary btn-lg btn-block" id="test-button"
-                    style="margin-top: 1rem;">
-                Parse Your Schedule
-            </button>
-            <hr class="mb-4">
-            <h4 class="mb-3">Notification Area</h4>
-            <div id="notificationArea"
-                 style="overflow-y: scroll; height:260px; background: white;
-                        padding: 0.6rem;">
-            </div>
-        </div>
-    </div>
-
-    <div class="py-5 text-center">
-        <h2>Generated Calendar</h2>
-        <table class="table" id="schedule">
-            <thead>
-            <tr class="row">
-                <td class="col"></td>
-                <td class="col">MON</td>
-                <td class="col">TUES</td>
-                <td class="col">WED</td>
-                <td class="col">THURS</td>
-                <td class="col">FRI</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="row">
-                <td class="col">08:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">09:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">10:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">11:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">12:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">13:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">14:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">15:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">16:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">17:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            <tr class="row">
-                <td class="col">18:40</td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-                <td class="col"></td>
-            </tr>
-            </tbody>
-        </table>
     </div>
 
     <footer class="my-5 pt-5 text-muted text-center text-small">
-        <p class="mb-1">&copy; 2017-2018 Adnan Burak Ayaz</p>
+        <p class="mb-1">&copy; 2017-2019 | Adnan Burak Ayaz - Berk Canlı</p>
         <ul class="list-inline">
-            <li class="list-inline-item"><a href="https://aburakayaz.github.io">Blog</a>
+            <li class="list-inline-item">
+                <a href="https://aburakayaz.github.io">Blog</a>
             </li>
-            <li class="list-inline-item"><a
-                    href="https://github.com/aburakayaz">GitHub</a></li>
+            <li class="list-inline-item">
+                <a href="https://github.com/aburakayaz">GitHub</a>
+            </li>
         </ul>
     </footer>
 </div>
+
 <script src="https://apis.google.com/js/api.js"></script>
 <script src="./index.js"></script>
 <script>

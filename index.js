@@ -9,27 +9,62 @@ const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v
 // included, separated by spaces.
 const SCOPES = 'https://www.googleapis.com/auth/calendar';
 
-//  Current Term
-const CURRENT_TERM = '201801';
-
-const CALENDAR_SUMMARY = `Courses | Term ${CURRENT_TERM}`;
-for (const element of document.getElementsByClassName("calendar_summary")) {
-    element.textContent = CALENDAR_SUMMARY;
-}
-
 let CALENDAR = null;
-document.getElementById('term_schedule_link').href = `https://mysu.sabanciuniv.edu/en/ajax/getCourseSchedule?termcode=${CURRENT_TERM}`;
 
 //  DOM References
+const termScheduleLink = document.getElementById('term-schedule-link');
+const termSubmitForm = document.getElementById('term-submit-form');
+termSubmitForm.onchange = termSubmit;
+termSubmitForm.onsubmit = termSubmit;
+
+const pasteArea = document.getElementById('paste');
+pasteArea.onchange = parseAndShowSchedule;
+
 const authorizeButton = document.getElementById('authorize-button');
 const signoutButton = document.getElementById('signout-button');
 const authorizedActions = document.getElementById('authorized-actions');
 const addButton = document.getElementById('add-button');
 const deleteButton = document.getElementById('delete-button');
 const notificationArea = document.getElementById('notificationArea');
-const testButton = document.getElementById('test-button');
-testButton.onclick = printClasses;
 
+//  Create global Current Term variables
+let CURRENT_TERM_YEAR, CURRENT_TERM_TYPE;
+let CURRENT_TERM_NUMERIC, CURRENT_TERM_VERBAL, CALENDAR_SUMMARY;
+
+setTerm(2000, 'Fall');
+
+function setTerm(year, type) {
+    CURRENT_TERM_YEAR = year;
+    CURRENT_TERM_TYPE = type;
+
+    CURRENT_TERM_NUMERIC = `${CURRENT_TERM_YEAR}${CURRENT_TERM_TYPE === 'Fall' ? '01' : '02'}`;
+    CURRENT_TERM_VERBAL = `${CURRENT_TERM_YEAR} ${CURRENT_TERM_TYPE}`;
+    CALENDAR_SUMMARY = `"${CURRENT_TERM_VERBAL} Courses"`;
+
+    //  Make DOM changes
+    termSubmitForm.elements['current-term-year'].value = year;
+    termSubmitForm.elements['current-term-type'].value = type;
+
+    termScheduleLink.href = `https://mysu.sabanciuniv.edu/en/ajax/getCourseSchedule?termcode=${CURRENT_TERM_NUMERIC}`;
+
+    for (const element of document.getElementsByClassName("calendar-summary")) {
+        element.textContent = CALENDAR_SUMMARY;
+    }
+
+    for (const element of document.getElementsByClassName("current-term-verbal")) {
+        element.textContent = CURRENT_TERM_VERBAL;
+    }
+
+    checkIfUserHasACalendarAlready();
+}
+
+function termSubmit(event) {
+    event.preventDefault();
+
+    const year = termSubmitForm.elements['current-term-year'].value;
+    const type = termSubmitForm.elements['current-term-type'].value;
+    setTerm(year, type);
+}
 
 /**
  *  On load, called to load the auth2 library and API client library.
@@ -104,7 +139,8 @@ function handleSignoutClick() {
  */
 function addNotification(message) {
     const notification = document.createElement("p");
-    notification.innerHTML = message;
+    const timeStamp = new Date().toTimeString().split(' ')[0];
+    notification.innerHTML = `${timeStamp} | ${message}`;
     notificationArea.appendChild(notification);
 }
 
@@ -118,8 +154,7 @@ const recurrences = ['RRULE:FREQ=WEEKLY;COUNT=15'];
  * @param id
  */
 function jump(id) {
-    window.location = window.location.origin
-        + window.location.pathname + '#' + id;
+    window.location = window.location.origin + window.location.pathname + '#' + id;
 }
 
 function fillRecurrences() {
@@ -180,19 +215,23 @@ function fillSchedule() {
             if (hour[j] === ' ') {
                 continue;
             }
-            table.rows[i]
-                .cells[j + 1]
-                .innerText = hour[j].className + '\n' + hour[j].place;
+            table.rows[i].cells[j + 1].innerText = hour[j].className + '\n' + hour[j].place;
         }
     }
 }
 
-function printClasses() {
-    let text = document.getElementById('paste').value;
-    tableMatrix = getTableMatrix(text);
-    fillSchedule();
-    jump('schedule');
-    addNotification('Generated your schedule.')
+function parseAndShowSchedule() {
+    tableMatrix = getTableMatrix(pasteArea.value);
+    try {
+        fillSchedule();
+        document.getElementById('generated-schedule-row').classList.remove('d-none');
+        // jump('schedule');
+        addNotification('Generated your schedule.');
+    }
+    catch (e) {
+        console.log("Parsing error", e);
+        addNotification('Invalid schedule content!');
+    }
 }
 
 function getStartTime(day, hour) {
@@ -302,7 +341,7 @@ async function checkIfUserHasACalendarAlready() {
  */
 async function addCalendar() {
     if (!tableMatrix) {
-        addNotification("Please paste your schedule to the above.");
+        addNotification('Please paste your schedule.');
         return;
     }
 
@@ -310,7 +349,7 @@ async function addCalendar() {
 
     try {
         const newCalendar = await createCalendar();
-        await addCourses(newCalendar.id);
+        await addCoursesToCalendar(newCalendar.id);
         setCalendar(newCalendar);
     }
     catch (e) {
@@ -319,7 +358,7 @@ async function addCalendar() {
     }
 }
 
-function createCalendar() {
+async function createCalendar() {
     return new Promise(function (resolve, reject) {
         const request = gapi.client.calendar.calendars.insert({
             'summary': CALENDAR_SUMMARY,
@@ -343,7 +382,7 @@ function createCalendar() {
     });
 }
 
-async function addCourses(calendarId) {
+async function addCoursesToCalendar(calendarId) {
     return new Promise(function (resolve, reject) {
         addNotification("Adding courses...");
 
@@ -352,12 +391,12 @@ async function addCourses(calendarId) {
         const batch = gapi.client.newBatch();
 
         tableMatrix.forEach((row, hour) =>
-            row.forEach((course, i) => {
+            row.forEach((course, day) => {
                 if (course === ' ') {
                     return;
                 }
                 batch.add(
-                    getCourseRequest(calendarId, course.className, course.place, i, hour)
+                    getCourseRequest(calendarId, course.className, course.place, day, hour)
                 );
             })
         );
@@ -391,8 +430,7 @@ function deleteCalendar() {
 
         if (response.hasOwnProperty('error')) {
             setCalendar(CALENDAR);
-            addNotification(`Failed to delete <i>${CALENDAR.summary}</i>. Here is why:`);
-            addNotification(response.error.message);
+            addNotification(`Failed to delete <i>${CALENDAR.summary}</i>. Here is why:\n${response.error.message}`);
             return;
         }
 
