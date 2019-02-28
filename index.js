@@ -209,7 +209,7 @@ function getTableMatrix(text) {
 function fillSchedule() {
     const table = document.getElementById('schedule');
     let hour;
-    for (let i = 1; i < 12; i++) {
+    for (let i = 1; i < tableMatrix.length; i++) {
         hour = tableMatrix[i - 1];
         for (let j = 0; j < hour.length; j++) {
             if (hour[j] === ' ') {
